@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -52,32 +53,48 @@ namespace VideoConvertor
             }
         }
 
-        private void DoEvent()
+        private async Task ConvertH264ToMp4Async()
         {
             string directoryPath = textBox1.Text;
             string sp = Application.StartupPath.Substring(0, Application.StartupPath.Length - 5);
             string ffmpegPath = sp + "ffmpeg-2024-03-20-git-e04c638f5f-essentials_build\\bin\\ffmpeg.exe";
 
-            foreach(string filePath in Directory.GetFiles(directoryPath, "*.h264"))
+            using (var process = new Process())
             {
-                string outputPath = Path.ChangeExtension(textBox2.Text, ".mp4");
 
-                Process process = new Process();
-                process.StartInfo.FileName = ffmpegPath;
-                process.StartInfo.Arguments = $"-i \"{filePath}\" -c:v copy \"{outputPath}\"";
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.CreateNoWindow = true;
+                foreach (string filePath in Directory.GetFiles(directoryPath, "*.h264"))
+                {
+                    string filename = Path.GetFileNameWithoutExtension(filePath);
+                    string outputPath = Path.Combine(textBox2.Text, filename + ".mp4");
 
-                process.Start();
-                process.WaitForExit();
+                    process.StartInfo.FileName = ffmpegPath;
+                    process.StartInfo.Arguments = $"-r 18 -i \"{filePath}\" -c:v copy \"{outputPath}\"";
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardError = true;
+
+                    process.Start();
+
+                    process.WaitForExit();
+                }
             }
         }
-
         private void button1_Click(object sender, EventArgs e)
         {
-            DoEvent();
+            ConvertH264ToMp4Async();
+        }
+
+        private static string ParseProgress(string line)
+        {
+            var regex = new Regex(@"time=(\d{2}:\d{2}:\d{2}.\d{2})");
+            var match = regex.Match(line);
+
+            if (match.Success)
+            {
+                return $"Current progress: {match.Groups[1].Value}";
+            }
+
+            return null;
         }
     }
 }
