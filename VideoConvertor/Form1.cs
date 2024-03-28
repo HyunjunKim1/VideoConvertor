@@ -67,8 +67,12 @@ namespace VideoConvertor
                     string filename = Path.GetFileNameWithoutExtension(filePath);
                     string outputPath = Path.Combine(textBox2.Text, filename + ".mp4");
 
+                    if (File.Exists(outputPath))
+                        File.Delete(outputPath);
+
                     process.StartInfo.FileName = ffmpegPath;
-                    process.StartInfo.Arguments = $"-r 18 -i \"{filePath}\" -c:v copy \"{outputPath}\"";
+                    
+                    process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -c:v copy \"{outputPath}\"";
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.RedirectStandardError = true;
