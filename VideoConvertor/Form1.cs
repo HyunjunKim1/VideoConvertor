@@ -16,6 +16,8 @@ namespace VideoConvertor
 {
     public partial class Form1 : Form
     {
+        string NowVideoType;
+
         public Form1()
         {
             InitializeComponent();
@@ -23,37 +25,70 @@ namespace VideoConvertor
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            NowVideoType = string.Empty;
             this.ActiveControl = null;
             this.Focus();
         }
 
         private void textBox1_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog fd = new FolderBrowserDialog();
-            fd.RootFolder = Environment.SpecialFolder.MyComputer;
-            fd.Description = "Selecet folder";
-
-            if(fd.ShowDialog() == DialogResult.OK)
+            if(cBox_Type.SelectedIndex == 0)
             {
-                string selectedFilePath = fd.SelectedPath;
-                textBox1.Text = selectedFilePath;
+                FolderBrowserDialog fd = new FolderBrowserDialog();
+                fd.RootFolder = Environment.SpecialFolder.MyComputer;
+                fd.Description = "Selecet folder";
+
+                if (fd.ShowDialog() == DialogResult.OK)
+                {
+                    string selectedFilePath = fd.SelectedPath;
+                    textBox1.Text = selectedFilePath;
+                }
+            }
+            else
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.InitialDirectory = "c:\\";
+                ofd.Filter = "h264 files (*.h264)|*.h264|All files (*.*)|*.*";
+                ofd.RestoreDirectory = true;
+
+                if(ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string selectedFile = ofd.FileName;
+                    textBox1.Text = selectedFile;
+                }
             }
         }
 
         private void textBox2_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog fd = new FolderBrowserDialog();
-            fd.RootFolder = Environment.SpecialFolder.MyComputer;
-            fd.Description = "Selecet folder";
-
-            if (fd.ShowDialog() == DialogResult.OK)
+            if (cBox_Type.SelectedIndex == 0)
             {
-                string selectedFilePath = fd.SelectedPath;
-                textBox2.Text = selectedFilePath;
+                FolderBrowserDialog fd = new FolderBrowserDialog();
+                fd.RootFolder = Environment.SpecialFolder.MyComputer;
+                fd.Description = "Selecet folder";
+
+                if (fd.ShowDialog() == DialogResult.OK)
+                {
+                    string selectedFilePath = fd.SelectedPath;
+                    textBox2.Text = selectedFilePath;
+                }
+            }
+            else
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.InitialDirectory = "c:\\";
+                ofd.Filter = "h264 files (*.h264)|*.h264|All files (*.*)|*.*";
+                ofd.RestoreDirectory = true;
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string selectedFile = ofd.FileName;
+                    textBox2.Text = selectedFile;
+                }
             }
         }
 
-        private async Task ConvertH264ToMp4Async()
+        private async Task FolderConvertH264ToMp4Async()
         {
             string directoryPath = textBox1.Text;
             string sp = Application.StartupPath.Substring(0, Application.StartupPath.Length - 5);
@@ -65,42 +100,104 @@ namespace VideoConvertor
                 foreach (string filePath in Directory.GetFiles(directoryPath, "*.h264"))
                 {
                     string filename = Path.GetFileNameWithoutExtension(filePath);
-                    string outputPath = Path.Combine(textBox2.Text, filename + ".mp4");
+                    string outputPath = Path.Combine(textBox2.Text, filename + NowVideoType);
 
                     if (File.Exists(outputPath))
                         File.Delete(outputPath);
 
                     process.StartInfo.FileName = ffmpegPath;
-                    
-                    process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -c:v copy \"{outputPath}\"";
-                    process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.RedirectStandardOutput = true;
-                    process.StartInfo.RedirectStandardError = true;
 
+                    if (NowVideoType == ".wmv")
+                    {
+                        process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -threads 4 -c:v wmv2 -c:a wmav2 \"{outputPath}\"";
+                        process.StartInfo.UseShellExecute = false;
+                        process.StartInfo.RedirectStandardOutput = true;
+                        process.StartInfo.RedirectStandardError = true;
+                    }
+                    else if (NowVideoType == ".flv")
+                    {
+                        process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -c:v libx264 -c:a aac \"{outputPath}\"";
+                        process.StartInfo.UseShellExecute = false;
+                        process.StartInfo.RedirectStandardOutput = true;
+                        process.StartInfo.RedirectStandardError = true;
+                    }
+                    else if (NowVideoType == ".mov")
+                    {
+                        process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -c:v libx264 -c:a aac \"{outputPath}\"";
+                        process.StartInfo.UseShellExecute = false;
+                        process.StartInfo.RedirectStandardOutput = true;
+                        process.StartInfo.RedirectStandardError = true;
+                    }
+                    else
+                    {
+                        process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -c:v copy \"{outputPath}\"";
+                        process.StartInfo.UseShellExecute = false;
+                        process.StartInfo.RedirectStandardOutput = true;
+                        process.StartInfo.RedirectStandardError = true;
+                    }
                     process.Start();
 
                     process.WaitForExit();
+
+                    await Task.Run(() =>
+                    {
+                        while (!process.StandardError.EndOfStream)
+                        {
+                            string line = process.StandardError.ReadLine();
+                            var match = Regex.Match(line, @"time=(\d{2}:\d{2}:\d{2}.\d{2})");
+                            if (match.Success)
+                            {
+                                Console.WriteLine($"Progress: {match.Groups[1].Value}");
+                            }
+                        }
+                    });
+
+                    process.WaitForExit();
+
                 }
             }
 
             MessageBox.Show("Work Done", "Video format Convert", MessageBoxButtons.OK);
         }
-        private void button1_Click(object sender, EventArgs e)
+
+
+        private void FileConvertH264ToMp4Async()
         {
-            ConvertH264ToMp4Async();
+            throw new NotImplementedException();
         }
 
-        private static string ParseProgress(string line)
+
+        private void button1_Click(object sender, EventArgs e)
         {
-            var regex = new Regex(@"time=(\d{2}:\d{2}:\d{2}.\d{2})");
-            var match = regex.Match(line);
+            if(cBox_Type.SelectedIndex == 0)
+                FolderConvertH264ToMp4Async();
+            else
+                FileConvertH264ToMp4Async();
+        }
 
-            if (match.Success)
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch(comboBox1.SelectedIndex)
             {
-                return $"Current progress: {match.Groups[1].Value}";
+                case 0:
+                    NowVideoType = ".mkv";
+                    break;
+                case 1:
+                    NowVideoType = ".wmv";
+                    break;
+                case 2:
+                    NowVideoType = ".mp4";
+                    break;
+                case 3:
+                    NowVideoType = ".mpeg";
+                    break;
+                case 4:
+                    NowVideoType = ".mov";
+                    break;
+                case 5:
+                    NowVideoType = ".flv";
+                    break;
             }
-
-            return null;
         }
     }
 }
