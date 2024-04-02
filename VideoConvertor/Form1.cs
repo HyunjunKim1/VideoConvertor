@@ -61,30 +61,14 @@ namespace VideoConvertor
 
         private void textBox2_Click(object sender, EventArgs e)
         {
-            if (cBox_Type.SelectedIndex == 0)
-            {
-                FolderBrowserDialog fd = new FolderBrowserDialog();
-                fd.RootFolder = Environment.SpecialFolder.MyComputer;
-                fd.Description = "Selecet folder";
+            FolderBrowserDialog fd = new FolderBrowserDialog();
+            fd.RootFolder = Environment.SpecialFolder.MyComputer;
+            fd.Description = "Selecet folder";
 
-                if (fd.ShowDialog() == DialogResult.OK)
-                {
-                    string selectedFilePath = fd.SelectedPath;
-                    textBox2.Text = selectedFilePath;
-                }
-            }
-            else
+            if (fd.ShowDialog() == DialogResult.OK)
             {
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.InitialDirectory = "c:\\";
-                ofd.Filter = "h264 files (*.h264)|*.h264|All files (*.*)|*.*";
-                ofd.RestoreDirectory = true;
-
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    string selectedFile = ofd.FileName;
-                    textBox2.Text = selectedFile;
-                }
+                string selectedFilePath = fd.SelectedPath;
+                textBox2.Text = selectedFilePath;
             }
         }
 
@@ -163,10 +147,54 @@ namespace VideoConvertor
 
         private void FileConvertH264ToMp4Async()
         {
-            throw new NotImplementedException();
+            string directoryPath = textBox1.Text;
+            string sp = Application.StartupPath.Substring(0, Application.StartupPath.Length - 5);
+            string ffmpegPath = sp + "ffmpeg-2024-03-20-git-e04c638f5f-essentials_build\\bin\\ffmpeg.exe";
+
+            using (var process = new Process())
+            {
+                string filePath = textBox1.Text;
+                string filename = Path.GetFileNameWithoutExtension(filePath);
+                string outputPath = Path.Combine(textBox2.Text, filename + NowVideoType);
+
+                if (File.Exists(outputPath))
+                    File.Delete(outputPath);
+
+                process.StartInfo.FileName = ffmpegPath;
+
+                if (NowVideoType == ".wmv")
+                {
+                    process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -threads 4 -c:v wmv2 -c:a wmav2 \"{outputPath}\"";
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardError = true;
+                }
+                else if (NowVideoType == ".flv")
+                {
+                    process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -c:v libx264 -c:a aac \"{outputPath}\"";
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardError = true;
+                }
+                else if (NowVideoType == ".mov")
+                {
+                    process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -c:v libx264 -c:a aac \"{outputPath}\"";
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardError = true;
+                }
+                else
+                {
+                    process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -c:v copy \"{outputPath}\"";
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardError = true;
+                }
+                process.Start();
+
+                process.WaitForExit();
+            }
         }
-
-
         private void button1_Click(object sender, EventArgs e)
         {
             if(cBox_Type.SelectedIndex == 0)
@@ -198,6 +226,12 @@ namespace VideoConvertor
                     NowVideoType = ".flv";
                     break;
             }
+        }
+
+        private void cBox_Type_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            textBox1.Text = string.Empty;
+            textBox2.Text = string.Empty;
         }
     }
 }

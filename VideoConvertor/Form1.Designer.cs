@@ -33,13 +33,13 @@ namespace VideoConvertor
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cBox_Type = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.cBox_Type = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
@@ -81,6 +81,56 @@ namespace VideoConvertor
             this.panel2.Size = new System.Drawing.Size(330, 232);
             this.panel2.TabIndex = 1;
             // 
+            // comboBox1
+            // 
+            this.comboBox1.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            ".mkv",
+            ".wmv",
+            ".mp4",
+            ".mpeg",
+            ".mov",
+            ".flv"});
+            this.comboBox1.Location = new System.Drawing.Point(177, 37);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(132, 20);
+            this.comboBox1.TabIndex = 6;
+            this.comboBox1.Text = "Select convert type";
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(175, 16);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(98, 12);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Converting Type";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(25, 16);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(63, 12);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Path Type";
+            // 
+            // cBox_Type
+            // 
+            this.cBox_Type.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.cBox_Type.FormattingEnabled = true;
+            this.cBox_Type.Items.AddRange(new object[] {
+            "Folder",
+            "File"});
+            this.cBox_Type.Location = new System.Drawing.Point(27, 37);
+            this.cBox_Type.Name = "cBox_Type";
+            this.cBox_Type.Size = new System.Drawing.Size(132, 20);
+            this.cBox_Type.TabIndex = 3;
+            this.cBox_Type.Text = "Select path type";
+            this.cBox_Type.SelectedIndexChanged += new System.EventHandler(this.cBox_Type_SelectedIndexChanged);
+            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(99, 178);
@@ -110,55 +160,6 @@ namespace VideoConvertor
             this.textBox1.TabIndex = 0;
             this.textBox1.Text = "File path";
             this.textBox1.Click += new System.EventHandler(this.textBox1_Click);
-            // 
-            // cBox_Type
-            // 
-            this.cBox_Type.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.cBox_Type.FormattingEnabled = true;
-            this.cBox_Type.Items.AddRange(new object[] {
-            "Folder",
-            "File"});
-            this.cBox_Type.Location = new System.Drawing.Point(27, 37);
-            this.cBox_Type.Name = "cBox_Type";
-            this.cBox_Type.Size = new System.Drawing.Size(132, 20);
-            this.cBox_Type.TabIndex = 3;
-            this.cBox_Type.Text = "Select path type";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(25, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(63, 12);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Path Type";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(175, 16);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(98, 12);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Converting Type";
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            ".mkv",
-            ".wmv",
-            ".mp4",
-            ".mpeg",
-            ".mov",
-            ".flv"});
-            this.comboBox1.Location = new System.Drawing.Point(177, 37);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(132, 20);
-            this.comboBox1.TabIndex = 6;
-            this.comboBox1.Text = "Select convert type";
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // Form1
             // 
