@@ -72,7 +72,7 @@ namespace VideoConvertor
             }
         }
 
-        private async Task FolderConvertH264ToMp4Async()
+        private void FolderConvertH264ToMp4Async()
         {
             string directoryPath = textBox1.Text;
             string sp = Application.StartupPath.Substring(0, Application.StartupPath.Length - 5);
@@ -122,22 +122,6 @@ namespace VideoConvertor
                     process.Start();
 
                     process.WaitForExit();
-
-                    await Task.Run(() =>
-                    {
-                        while (!process.StandardError.EndOfStream)
-                        {
-                            string line = process.StandardError.ReadLine();
-                            var match = Regex.Match(line, @"time=(\d{2}:\d{2}:\d{2}.\d{2})");
-                            if (match.Success)
-                            {
-                                Console.WriteLine($"Progress: {match.Groups[1].Value}");
-                            }
-                        }
-                    });
-
-                    process.WaitForExit();
-
                 }
             }
 
