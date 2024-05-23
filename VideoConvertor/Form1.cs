@@ -17,6 +17,8 @@ namespace VideoConvertor
     public partial class Form1 : Form
     {
         string NowVideoType;
+        Process process;
+        bool Flag = false;
 
         public Form1()
         {
@@ -72,73 +74,87 @@ namespace VideoConvertor
             //}
         }
 
-        private void FolderConvertH264ToMp4Async()
+        private async Task FolderConvertH264ToMp4Async()
         {
+            Flag = false;
+
             string directoryPath = textBox1.Text;
             string sp = Application.StartupPath.Substring(0, Application.StartupPath.Length - 5);
-            string ffmpegPath = sp + "ffmpeg-2024-03-20-git-e04c638f5f-essentials_build\\bin\\ffmpeg.exe";
+            string ffmpegPath = Path.Combine(sp, "ffmpeg-2024-03-20-git-e04c638f5f-essentials_build", "bin", "ffmpeg.exe");
 
-            using (var process = new Process())
+            foreach (string filePath in Directory.GetFiles(directoryPath, "*.h264"))
             {
+                string filename = Path.GetFileNameWithoutExtension(filePath);
+                string outputPath = Path.Combine(textBox2.Text, filename + ".mp4");
 
-                foreach (string filePath in Directory.GetFiles(directoryPath, "*.h264"))
+                if (File.Exists(outputPath))
                 {
-                    string filename = Path.GetFileNameWithoutExtension(filePath);
-                    string outputPath = Path.Combine(textBox2.Text, filename + ".mp4");
+                    File.Delete(outputPath);
+                }
 
-                    if (File.Exists(outputPath))
-                        File.Delete(outputPath);
-
-                    process.StartInfo.FileName = ffmpegPath;
-
-                    /*
-                    //if (NowVideoType == ".wmv")
-                    //{
-                    //    process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -threads 4 -c:v wmv2 -c:a wmav2 \"{outputPath}\"";
-                    //    process.StartInfo.UseShellExecute = false;
-                    //    process.StartInfo.RedirectStandardOutput = true;
-                    //    process.StartInfo.RedirectStandardError = true;
-                    //}
-                    //else if (NowVideoType == ".flv")
-                    //{
-                    //    process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -c:v libx264 -c:a aac \"{outputPath}\"";
-                    //    process.StartInfo.UseShellExecute = false;
-                    //    process.StartInfo.RedirectStandardOutput = true;
-                    //    process.StartInfo.RedirectStandardError = true;
-                    //}
-                    //else if (NowVideoType == ".mov")
-                    //{
-                    //    process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -c:v libx264 -c:a aac \"{outputPath}\"";
-                    //    process.StartInfo.UseShellExecute = false;
-                    //    process.StartInfo.RedirectStandardOutput = true;
-                    //    process.StartInfo.RedirectStandardError = true;
-                    //}
-                    //else
-                    //{
-                    */
-                        process.StartInfo.Arguments = $"-r 30 -i \"{filePath}\" -c:v copy \"{outputPath}\"";
-                        process.StartInfo.UseShellExecute = false;
-                        process.StartInfo.RedirectStandardOutput = true;
-                        process.StartInfo.RedirectStandardError = true;
-                    //}
-
-                    try
+                process = new Process()
+                {
+                    StartInfo = new ProcessStartInfo
                     {
-                        process.Start();
-
-                        if (!process.WaitForExit(10000))
-                            process.Kill();
-                        else if (process.ExitCode != 0)
-                            Console.WriteLine("");
+                        FileName = ffmpegPath,
+                        //Arguments = $"-r 30 -i \"{filePath}\" -c:v libx264 -crf 23 \"{outputPath}\"",
+                        Arguments = $"-r 30 -i \"{filePath}\" -c:v copy \"{outputPath}\"",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
                     }
-                    catch(Exception ex)
+                };
+
+                process.OutputDataReceived += (sender, args) => {
+                    if (!string.IsNullOrEmpty(args.Data))
                     {
-
+                        Console.WriteLine(args.Data); // 콘솔에 출력
+                        this.Invoke(new Action(() =>
+                        {
+                            tBox_Log.AppendText(args.Data.ToString() + Environment.NewLine);
+                        }));
                     }
+                };
+
+                process.ErrorDataReceived += (sender, args) => {
+                    if (!string.IsNullOrEmpty(args.Data))
+                    {
+                        Console.WriteLine(args.Data); // 콘솔에 출력
+                        this.Invoke(new Action(() =>
+                        {
+                            tBox_Log.AppendText(args.Data.ToString() + Environment.NewLine);
+                        }));
+                    }
+                };
+
+                try
+                {
+                    process.Start();
+                    process.BeginOutputReadLine();
+                    process.BeginErrorReadLine();
+
+                    await Task.Run(() => process.WaitForExit());
+
+                    if (process.ExitCode != 0)
+                    {
+                        Console.WriteLine($"Error processing file {filePath}. See logs for details.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Successfully processed file {filePath}.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception processing file {filePath}:\n{ex.Message}");
                 }
             }
 
-            MessageBox.Show("Work Done", "Video format Convert", MessageBoxButtons.OK);
+            if(!Flag)
+                MessageBox.Show("Work Done", "Video format Convert", MessageBoxButtons.OK);
+            else
+                MessageBox.Show("Stoped!", "Video format Convert", MessageBoxButtons.OK);
         }
 
 
@@ -273,6 +289,12 @@ namespace VideoConvertor
 
                 textBox2.Text = selectedFilePath;
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            process.Kill();
+            Flag = true;
         }
     }
 }

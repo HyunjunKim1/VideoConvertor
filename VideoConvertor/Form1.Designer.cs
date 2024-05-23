@@ -33,6 +33,7 @@ namespace VideoConvertor
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.tBox_Log = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -48,7 +49,7 @@ namespace VideoConvertor
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(330, 56);
+            this.panel1.Size = new System.Drawing.Size(326, 56);
             this.panel1.TabIndex = 0;
             // 
             // pictureBox1
@@ -64,18 +65,28 @@ namespace VideoConvertor
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(251)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
+            this.panel2.Controls.Add(this.tBox_Log);
             this.panel2.Controls.Add(this.button1);
             this.panel2.Controls.Add(this.textBox2);
             this.panel2.Controls.Add(this.textBox1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 56);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(330, 184);
+            this.panel2.Size = new System.Drawing.Size(326, 398);
             this.panel2.TabIndex = 1;
+            // 
+            // tBox_Log
+            // 
+            this.tBox_Log.Location = new System.Drawing.Point(22, 183);
+            this.tBox_Log.Multiline = true;
+            this.tBox_Log.Name = "tBox_Log";
+            this.tBox_Log.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tBox_Log.Size = new System.Drawing.Size(283, 203);
+            this.tBox_Log.TabIndex = 3;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(105, 125);
+            this.button1.Location = new System.Drawing.Point(105, 117);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(122, 39);
             this.button1.TabIndex = 2;
@@ -108,7 +119,7 @@ namespace VideoConvertor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(330, 240);
+            this.ClientSize = new System.Drawing.Size(326, 454);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -132,6 +143,7 @@ namespace VideoConvertor
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox tBox_Log;
     }
 }
 
