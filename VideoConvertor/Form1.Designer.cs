@@ -102,7 +102,6 @@ namespace VideoConvertor
             this.textBox2.Size = new System.Drawing.Size(263, 21);
             this.textBox2.TabIndex = 1;
             this.textBox2.Text = "Path to save converted files";
-            this.textBox2.Click += new System.EventHandler(this.textBox2_Click);
             this.textBox2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDoubleClick);
             // 
             // textBox1
